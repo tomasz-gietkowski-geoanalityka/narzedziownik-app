@@ -14,7 +14,9 @@ Tomasz Giętkowski (Geoanalityka), Grzegorz Górniak
 - Zapis warstw tymczasowych z wybranej grupy do GPKG
 
 ## Historia wersji
-### version 1.0.0:
+### 1.0.1
+Aktualizacja stylu dla warstwy StrefaPlanistyczna 
+### 1.0.0
 Import GML Planu Ogólnego Gminy wraz ze stylizacją oraz zapis warstw do plików GPKG. Tworzy warstwy tymczasowe Aktu Planowania Przestrzennego, Obszaru Uzupełnienia Zabudowy, Obszaru Zabudowy Śródmiejskiej, w stylu określonym rozporządzeniem. W porównaniu z ręcznym dodaniem GML do QGIS wtyczka dodaje do obiektów stref informacje o profilach. 
 
 ### Kontakt
