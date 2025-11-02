@@ -1,4 +1,4 @@
-name: Build QGIS Plugin ZIP (git archive)
+name: Build QGIS Plugin ZIP (from subdirectory)
 
 on:
   push:
@@ -7,7 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  # Nazwa katalogu top-level w ZIP (musi być zgodna z nazwą folderu wtyczki)
+  # Nazwa folderu, w którym znajduje się kod wtyczki
+  PLUGIN_DIR: narzedziownik_app
+  # Nazwa pliku ZIP (taka sama jak katalog wtyczki)
   PLUGIN_NAME: narzedziownik_app
 
 jobs:
@@ -20,12 +22,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🧰 Build ZIP via git archive
+      - name: 🧰 Build ZIP from subfolder
         run: |
           set -euo pipefail
           mkdir -p dist
-          git archive --format=zip --prefix="${PLUGIN_NAME}/" -o "dist/${PLUGIN_NAME}.zip" HEAD
-          echo "✅ Utworzono paczkę ZIP:"
+
+          # Tworzymy ZIP tylko z zawartością katalogu narzedziownik_app/
+          cd $PLUGIN_DIR
+          zip -r "../dist/${PLUGIN_NAME}.zip" . -x "*.git*" "__pycache__/*" "*/__pycache__/*"
+          cd ..
+
+          echo "✅ ZIP utworzony:"
           unzip -l "dist/${PLUGIN_NAME}.zip" | head -n 20
 
       - name: 📦 Upload ZIP as artifact
