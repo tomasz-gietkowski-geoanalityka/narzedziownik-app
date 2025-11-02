@@ -18,9 +18,9 @@ tags=APP, akty planowania przestrzennego, planowanie
 experimental=False
 deprecated=False
 
-repository=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik-app
-tracker=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik-app/issues
-homepage=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik-app
+repository=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik_app
+tracker=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik_app/issues
+homepage=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik_app
 icon=narzedziownik_app.svg
 
 changelog=
