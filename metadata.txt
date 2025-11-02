@@ -21,7 +21,7 @@ deprecated=False
 repository=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik-app
 tracker=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik-app/issues
 homepage=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik-app
-icon=resources/icons/narzedziownik_app.svg
+icon=narzedziownik_app.svg
 
 changelog=
  Version 1.0.0:
