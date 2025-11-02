@@ -1,62 +1,70 @@
-name: Build QGIS Plugin ZIP (git archive)
+name: Build QGIS Plugin ZIP (git archive, fixed top-level)
 
 on:
   push:
-    tags:
-      - "v*.*.*"    # np. v1.0.0
+    tags: ["v*.*.*"]   # np. v1.0.1
   workflow_dispatch:
+
+env:
+  # Nazwa katalogu top-level w ZIP (musi być poprawnym identyfikatorem Pythona)
+  PLUGIN_NAME: narzedziownik_app
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 🧩 Checkout repo
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 🧾 Get repository name
-        id: repo
-        run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          echo "name=${REPO_NAME}" >> "$GITHUB_OUTPUT"
-          echo "Detected repository name: ${REPO_NAME}"
-
-      - name: 🧰 Build ZIP via git archive
+      - name: Make ZIP with fixed top-level folder
         run: |
           set -euo pipefail
           mkdir -p dist
-          REPO_NAME="${{ steps.repo.outputs.name }}"
+          # Zbuduj paczkę tylko z bieżącego drzewa Gita, z prefiksem = PLUGIN_NAME/
+          git archive --format=zip --prefix="${PLUGIN_NAME}/" -o "dist/${PLUGIN_NAME}.zip" HEAD
 
-          # Tworzymy ZIP z prefiksem równym nazwie repo
-          git archive --format=zip --prefix="${REPO_NAME}/" -o "dist/${REPO_NAME}.zip" HEAD
+          echo "Podgląd zawartości ZIP:"
+          unzip -l "dist/${PLUGIN_NAME}.zip" | sed -n '1,40p'
 
-          echo "✅ ZIP utworzony:"
-          unzip -l "dist/${REPO_NAME}.zip" | head -n 20
+          echo "Walidacja: brak sufiksu -<tag> w top-level:"
+          # FAIL, jeśli pierwsza ścieżka zaczyna się od 'narzedziownik_app-'
+          if unzip -l "dist/${PLUGIN_NAME}.zip" | awk '{print $4}' | grep -q "^${PLUGIN_NAME}-"; then
+            echo "❌ W ZIP wykryto katalog zaczynający się od '${PLUGIN_NAME}-' (to nie powinno się zdarzyć w git archive)."
+            exit 1
+          fi
+          # Wymagane przez QGIS
+          if ! unzip -l "dist/${PLUGIN_NAME}.zip" | awk '{print $4}' | grep -q "^${PLUGIN_NAME}/metadata.txt$"; then
+            echo "❌ Brak ${PLUGIN_NAME}/metadata.txt w ZIP."
+            exit 1
+          fi
+          if ! unzip -l "dist/${PLUGIN_NAME}.zip" | awk '{print $4}' | grep -q "^${PLUGIN_NAME}/__init__.py$"; then
+            echo "❌ Brak ${PLUGIN_NAME}/__init__.py w ZIP."
+            exit 1
+          fi
 
-      - name: 📦 Upload ZIP as artifact
+      - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.repo.outputs.name }}.zip
-          path: dist/${{ steps.repo.outputs.name }}.zip
+          name: ${{ env.PLUGIN_NAME }}.zip
+          path: dist/${{ env.PLUGIN_NAME }}.zip
           if-no-files-found: error
 
   release:
     runs-on: ubuntu-latest
     needs: build
-
     steps:
-      - name: 📥 Download built ZIP
+      - name: Download built ZIP
         uses: actions/download-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}.zip
+          name: ${{ env.PLUGIN_NAME }}.zip
           path: dist
 
-      - name: 🚀 Publish GitHub Release with ZIP
+      - name: Attach ZIP to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/${{ github.event.repository.name }}.zip
+          files: dist/${{ env.PLUGIN_NAME }}.zip
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
