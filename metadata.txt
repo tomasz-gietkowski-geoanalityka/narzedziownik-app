@@ -6,7 +6,7 @@ version=1.0.0
 
 description=Wtyczka wspomaga wyświetlanie danych przestrzennych aktów planowania.
 about=
- Wtyczka umożliwia import pliku GML dla Planu Ogólnego Gminy oraz zapis warstw do plików GPKG. Tworzy warstwy tymczasowe Aktu Planowania Przestrzennego, Obszaru Uzupełnienia Zabudowy, Obszaru Zabudowy Śródmiejskiej, w stylu określonym rozporządzeniem. W porównaniu z ręcznym dodaniem GML do QGIS, wtyczka dodaje do obiektów stref informacje o profilach. 
+ Wtyczka umożliwia import pliku GML dla Planu Ogólnego Gminy oraz zapis warstw do plików GPKG. Tworzy warstwy tymczasowe Aktu Planowania Przestrzennego, Obszaru Uzupełnienia Zabudowy, Obszaru Zabudowy Śródmiejskiej, w stylu określonym rozporządzeniem. W porównaniu z ręcznym dodaniem GML do QGIS, wtyczka dodaje do obiektów stref informacje o profilach.
  Jeśli masz skrypty lub pomysł na funkcjonalności wspomagające projektowanie i wyświetlanie danych aktów planowania przestrzennego, przyłącz się do nas jako współautor wtyczki.
 
 author=Tomasz Giętkowski (Geoanalityka), Grzegorz Górniak
@@ -18,9 +18,9 @@ tags=APP, akty planowania przestrzennego, planowanie
 experimental=False
 deprecated=False
 
-repository=https://github.com/twoje_repozytorium/narzedziownik-app
-tracker=https://github.com/twoje_repozytorium/narzedziownik-app/issues
-homepage=https://geoanalityka.pl/wtyczka-geoanalityka/
+repository=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik-app
+tracker=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik-app/issues
+homepage=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik-app
 
 
 changelog=
