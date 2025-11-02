@@ -3,40 +3,49 @@ name: Build QGIS Plugin ZIP
 on:
   push:
     tags:
-      - "v*.*.*"   # np. v1.0.0
+      - "v*.*.*"   # uruchamia się przy tagach np. v1.0.0
+  workflow_dispatch:  # pozwala uruchomić ręcznie z GitHub Actions
 
 env:
-  PLUGIN_NAME: narzedziownik_app   # NAZWA top-level w ZIP (musi być valid Python identifier)
+  PLUGIN_NAME: narzedziownik_app   # <- NAZWA katalogu top-level w ZIPie (bez spacji, polskich znaków)
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prepare staging tree
+      - name: Prepare plugin folder for packaging
         run: |
           mkdir -p dist/${{ env.PLUGIN_NAME }}
-          # skopiuj tylko zawartość wtyczki:
+          # kopiujemy tylko potrzebne pliki, pomijając katalogi i pliki developerskie
           rsync -av \
-            --exclude '.git' --exclude '.github' --exclude 'dist' \
-            --exclude 'tests' --exclude '*.psd' --exclude '*.ai' \
-            --exclude '.gitignore' --exclude '.gitattributes' \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'dist' \
+            --exclude 'tests' \
+            --exclude '__pycache__' \
+            --exclude '*.psd' \
+            --exclude '*.ai' \
+            --exclude '*.zip' \
+            --exclude '.gitignore' \
+            --exclude '.gitattributes' \
             ./ dist/${{ env.PLUGIN_NAME }}/
 
-          # sanity check plików wymaganych przez QGIS:
+          # sanity check: musi istnieć metadata.txt i __init__.py
           test -f dist/${{ env.PLUGIN_NAME }}/metadata.txt
           test -f dist/${{ env.PLUGIN_NAME }}/__init__.py
 
-      - name: Create ZIP with correct top-level dir
+      - name: Create ZIP package
         run: |
           cd dist
           zip -r "${{ env.PLUGIN_NAME }}.zip" "${{ env.PLUGIN_NAME }}"
+          ls -lh
 
-      - name: Upload artifact
+      - name: Upload artifact (for verification)
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PLUGIN_NAME }}.zip
@@ -47,13 +56,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Download built artifact
+      - name: Download built ZIP
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.PLUGIN_NAME }}.zip
           path: dist
 
-      - name: Create GitHub Release & upload asset
+      - name: Publish GitHub Release with ZIP
         uses: softprops/action-gh-release@v2
         with:
           files: dist/${{ env.PLUGIN_NAME }}.zip
