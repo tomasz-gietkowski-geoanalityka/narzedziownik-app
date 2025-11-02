@@ -3,25 +3,62 @@ name: Build QGIS Plugin ZIP
 on:
   push:
     tags:
-      - "v*.*.*"   # uruchamia się przy tagach np. v1.0.0
-  workflow_dispatch:  # pozwala uruchomić ręcznie z GitHub Actions
+      - "v*.*.*"
+  workflow_dispatch:
 
 env:
-  PLUGIN_NAME: narzedziownik_app   # <- NAZWA katalogu top-level w ZIPie (bez spacji, polskich znaków)
+  # NAZWA katalogu top-level w ZIP (PEP8/identifier — bez spacji i polskich znaków)
+  PLUGIN_NAME: narzedziownik_app
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prepare plugin folder for packaging
+      - name: Locate plugin source dir (with metadata.txt)
+        id: locate
+        shell: bash
         run: |
-          mkdir -p dist/${{ env.PLUGIN_NAME }}
-          # kopiujemy tylko potrzebne pliki, pomijając katalogi i pliki developerskie
+          set -euo pipefail
+
+          echo "Repo root listing:"
+          ls -la
+
+          # Domyślnie zakładamy root repo
+          SRC_DIR="."
+
+          # Jeśli w root nie ma metadata.txt, spróbuj znaleźć najbliższy katalog który go ma
+          if [ ! -f "metadata.txt" ]; then
+            CANDIDATE="$(git ls-files '*/metadata.txt' | head -n1 || true)"
+            if [ -n "$CANDIDATE" ]; then
+              SRC_DIR="$(dirname "$CANDIDATE")"
+            fi
+          fi
+
+          if [ ! -f "$SRC_DIR/metadata.txt" ]; then
+            echo "Nie znaleziono metadata.txt ani w root, ani w podkatalogach." >&2
+            exit 1
+          fi
+
+          echo "Zidentyfikowano katalog źródłowy wtyczki: $SRC_DIR"
+          echo "src_dir=$SRC_DIR" >> "$GITHUB_OUTPUT"
+
+          echo "Listing katalogu źródłowego:"
+          ls -la "$SRC_DIR"
+
+      - name: Prepare staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "dist/${{ env.PLUGIN_NAME }}"
+
+          SRC_DIR="${{ steps.locate.outputs.src_dir }}"
+
+          # Bardzo ważne: trailing slash po SRC_DIR, by skopiować *zawartość*, nie katalog jako podkatalog
           rsync -av \
             --exclude '.git' \
             --exclude '.github' \
@@ -33,19 +70,28 @@ jobs:
             --exclude '*.zip' \
             --exclude '.gitignore' \
             --exclude '.gitattributes' \
-            ./ dist/${{ env.PLUGIN_NAME }}/
+            "${SRC_DIR}/" "dist/${{ env.PLUGIN_NAME }}/"
 
-          # sanity check: musi istnieć metadata.txt i __init__.py
-          test -f dist/${{ env.PLUGIN_NAME }}/metadata.txt
-          test -f dist/${{ env.PLUGIN_NAME }}/__init__.py
+          echo "Listing staging (dist/${{ env.PLUGIN_NAME }}):"
+          ls -la "dist/${{ env.PLUGIN_NAME }}"
 
-      - name: Create ZIP package
+          # sanity check – te pliki MUSZĄ być na poziomie top-level w stagingu
+          test -f "dist/${{ env.PLUGIN_NAME }}/metadata.txt"
+          test -f "dist/${{ env.PLUGIN_NAME }}/__init__.py" || {
+            echo "__init__.py nie znaleziony w katalogu staging! Upewnij się, że znajduje się obok metadata.txt." >&2
+            exit 1
+          }
+
+      - name: Create ZIP with correct top-level dir
+        shell: bash
         run: |
+          set -euo pipefail
           cd dist
           zip -r "${{ env.PLUGIN_NAME }}.zip" "${{ env.PLUGIN_NAME }}"
-          ls -lh
+          echo "Zawartość ZIP:"
+          unzip -l "${{ env.PLUGIN_NAME }}.zip" | sed -n '1,200p'
 
-      - name: Upload artifact (for verification)
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PLUGIN_NAME }}.zip
