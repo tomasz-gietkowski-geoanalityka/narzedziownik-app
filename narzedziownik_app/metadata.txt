@@ -1,17 +1,22 @@
 [general]
 name=Narzędziownik APP
+title=Narzędziownik APP
 qgisMinimumVersion=3.34
 qgisMaximumVersion=3.99
-version=1.0.1
+version=1.1.0
 
-description=Wtyczka wspomaga wyświetlanie danych przestrzennych aktów planowania.
-about=
- Wtyczka umożliwia import pliku GML dla Planu Ogólnego Gminy oraz zapis warstw do plików GPKG. Tworzy warstwy tymczasowe Aktu Planowania Przestrzennego, Obszaru Uzupełnienia Zabudowy, Obszaru Zabudowy Śródmiejskiej, w stylu określonym rozporządzeniem. W porównaniu z ręcznym dodaniem GML do QGIS, wtyczka dodaje do obiektów stref informacje o profilach. 
- Jeśli masz skrypty lub pomysł na funkcjonalności wspomagające projektowanie i wyświetlanie danych aktów planowania przestrzennego, przyłącz się do nas jako współautor wtyczki.
+description=Wtyczka wspomaga tworzenie i przeglądanie danych przestrzennych aktów planowania.
+about=W wersji 1.1.0, Narzędziownik APP potrafi:
+ - Zaimportować GML POG i rozłożyć go na odpowiednie warstwy ze stylizacją.
+ - Przeszukiwać EZDiUP i podłączać zgłoszone tam WMS/WFS, co jest szczególnie przydatne na poziomie gmin.
+ - Zapisać na dysk GPKG z warstw tymczasowych z wybranej grupy warstw.
+ - Połączyć wybrane na różnych warstwach poligony i wkleić do warstwy z włączoną edycją
+ - Przygotować budynki do OUZ
+ - Stworzyć OUZ.
+ - Zweryfikować OUZ po optymalizacji.
 
 author=Tomasz Giętkowski (Geoanalityka), Grzegorz Górniak
 email=tg@geoanalityka.pl
-
 license=GPL-3.0-or-later
 category=Vector
 tags=APP, akty planowania przestrzennego, planowanie
@@ -24,7 +29,12 @@ homepage=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik_app
 icon=narzedziownik_app.svg
 
 changelog=
+ Version 1.1.0:
+ * Dodanie narzędzi tworzenia i weryfikacji OUZ
+ * Dodanie narzędzia łączenia zaznaczonych poligonów
+ * Dodanie narzędzi przeszukiwania i dodawania warstw WMS/WFS z EZiUDP
+ * Drobne zmiany w działaniu importera POG GML
  Version 1.0.1:
- * Aktualizacja formularza dla warstwy StrefaPlanistyczna
+ * Aktualizacja formularza warstwy StrefaPlanistyczna
  Version 1.0.0:
  * Import GML Planu Ogólnego Gminy wraz ze stylizacją

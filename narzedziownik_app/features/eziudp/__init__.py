@@ -6,7 +6,6 @@ Licencja: GNU GPL v3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 """
 
-from .narzedziownik_app import NarzedziownikAPP
-
-def classFactory(iface):
-    return NarzedziownikAPP(iface)
+# -*- coding: utf-8 -*-
+from .controller import run
+__all__ = ["run"]
