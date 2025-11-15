@@ -1,17 +1,22 @@
 [general]
 name=Narzędziownik APP
 title=Narzędziownik APP
-qgisMinimumVersion=3.34
-qgisMaximumVersion=3.99
-version=1.1.0
+qgisMinimumVersion=3.40.8
+qgisMaximumVersion=3.40.12
+version=1.2.0
 
 description=Wtyczka wspomaga tworzenie i przeglądanie danych przestrzennych aktów planowania.
-about=W wersji 1.1.0, Narzędziownik APP potrafi:
+about=Narzędziownik APP potrafi:
+ EDYCJA
+ - Przeliczyć numerację w polach 'oznaczenie' i 'loklanyId', tak aby zaczynała się od 1 i nie zawierała luk w ciągłości numeracji.
+ - Połączyć wybrane na różnych warstwach poligony i wkleić do warstwy z włączoną edycją.
+ ZARZĄDZANIE WARSTWAMI
  - Zaimportować GML POG i rozłożyć go na odpowiednie warstwy ze stylizacją.
+ - Stworzyć warstwy POG zgodne z schematem pól wymaganym przez Wtyczkę APP2.
  - Przeszukiwać EZDiUP i podłączać zgłoszone tam WMS/WFS, co jest szczególnie przydatne na poziomie gmin.
  - Zapisać na dysk GPKG z warstw tymczasowych z wybranej grupy warstw.
- - Połączyć wybrane na różnych warstwach poligony i wkleić do warstwy z włączoną edycją
- - Przygotować budynki do OUZ
+ GENEROWANIE OUZ
+ - Przygotować budynki do OUZ.
  - Stworzyć OUZ.
  - Zweryfikować OUZ po optymalizacji.
 
@@ -29,6 +34,9 @@ homepage=https://github.com/tomasz-gietkowski-geoanalityka/narzedziownik_app
 icon=narzedziownik_app.svg
 
 changelog=
+ Version 1.2.0:
+ * Dodano przeliczanie numeracji w polach 'oznaczenie' i 'loklanyId'
+ * Dodanie tworzenie warstw POG zgodnych z schematem pól wymaganym przez Wtyczkę APP2
  Version 1.1.0:
  * Dodanie narzędzi tworzenia i weryfikacji OUZ
  * Dodanie narzędzia łączenia zaznaczonych poligonów
